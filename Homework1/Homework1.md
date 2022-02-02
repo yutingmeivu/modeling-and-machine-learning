@@ -1,7 +1,7 @@
 Homework 1
 ================
 YutingMei
-January 27, 2022
+February 01, 2022
 
 -   Read the help file for R’s built-in linear regression function lm
 
@@ -286,10 +286,16 @@ for(b in 1:3) {
 }
 ```
 
-![](Homework1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- --> \*
+![](Homework1_files/figure-gfm/unnamed-chunk-15-1.png)<!-- --> <br> \*
 Describe how this more flexible model affects the bias-variance tradeoff
-<br> - From the figure below, the variance of new model become larger,
-the bias become smaller
+<br> The expected squared error(or MSE) of an estimator *θ̂* with respect
+to an unknown parameter *θ* is defined as <br>
+*M**S**E* = *E*<sub>*θ*</sub>\[(*θ̂* − *θ*)<sup>2</sup>\] = *E*<sub>*θ*</sub>\[(*θ̂* − *E*<sub>*θ*</sub>\[*θ̂*\])<sup>2</sup>\] + (*E*<sub>*θ*</sub>\[*θ̂*\] − *θ*)<sup>2</sup> = *V**a**r*<sub>*θ*</sub>(*θ̂*) + *B**i**a**s**e*<sub>*θ*</sub>(*θ̂*, *θ*)<sup>2</sup>
+<br> From the figure below, the variance of new model become larger, the
+bias become smaller. This is because the model become more flexible, so
+the border(or the hyperplane) that seperate the space become more rough
+and the variance of the *θ̂* become larger, the variance of the MSE will
+become larger.
 
 ``` r
 ## plot the new linear classifier for three bootstraps
