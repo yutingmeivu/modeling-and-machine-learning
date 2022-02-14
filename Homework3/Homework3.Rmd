@@ -88,7 +88,7 @@ form  <- lcavol ~  lweight + age + lbph + lcp + pgg45 + lpsa + svi + gleason
 x_inp <- model.matrix(form, data=prostate_train)
 y_out <- prostate_train$lcavol
 fit <- glmnet(x=x_inp, y=y_out, lambda=seq(0.5, 0, -0.005))
-print(fit$beta)
+# print(fit$beta)
 ```
 
 ```{r}
@@ -144,7 +144,7 @@ legend('topright', c('train','test'), lty=1, pch=19,
        col=c('darkblue','darkred'), bty='n')
 
 colnames(fit$beta) <- paste('lam =', fit$lambda)
-print(fit$beta %>% as.matrix)
+# print(fit$beta %>% as.matrix)
 ```
 
 * Create a path diagram of the ridge regression analysis, similar to HTF Figure 3.8
