@@ -155,7 +155,7 @@ avg_coef = function(df){
   if (df == 0)
     rep(0,9)
   else
-    (sapply(beta_a, sum) / (beta_a %>% ncol))
+    (apply(beta_a, 1, sum) / (beta_a %>% ncol()))
 }
 ```
 
