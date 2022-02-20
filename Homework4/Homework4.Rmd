@@ -1,0 +1,201 @@
+---
+title: "Homework 4"
+author: "YutingMei"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  github_document
+fig_width: 6 
+fig_height: 4 
+---
+
+```{r global options, include = FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE)
+library("ISLR")
+library('dplyr')
+library('glm2')
+library('caret')
+library('tidyverse')
+library('MASS')
+library('class')
+library('e1071')
+```
+
+When the number of features p is large, there tends to be a deterioration in the performance of KNN and other local approaches that perform prediction using only observations that are near the test observation for which a prediction must be made. This phenomenon is
+known as the curse of dimensionality, and it ties into the fact that non-parametric approaches often perform poorly when p is large. We will now investigate this curse.
+
+(a) Suppose that we have a set of observations, each with measurements on p = 1 feature, X. We assume that X is uniformly (evenly) distributed on [0, 1]. Associated with each observation is a response value. Suppose that we wish to predict a test observation’s response using only observations that are within 10 % of the range of X closest to that test observation. For instance, in order to predict the response for a test observation with X = 0.6, we will use observations in the range [0.55,0.65]. On average, what fraction of the available observations will we use to make the prediction?
+
+- Because X is uniformly (evenly) distributed on [0, 1], so it becomes a line. The fraction we use to make prediction is 0.1.
+
+(b) Now suppose that we have a set of observations, each with measurements on p = 2 features, X1 and X2. We assume that (X1, X2) are uniformly distributed on [0, 1] × [0, 1]. We wish to predict a test observation’s response using only observations that are within 10 % of the range of X1 and within 10 % of the range of X2 closest to that test observation. For instance, in order to predict the response for a test observation with X1 = 0.6 and X2 = 0.35, we will use observations in the range [0.55, 0.65] for X1 and in the range [0.3,0.4] for X2. On average, what fraction of the available observations will we use to make the prediction?
+
+- Since p equals to 2, then the space become a square, the fraction we need to predict about two ponts becomes 0.02. 
+
+(c) Now suppose that we have a set of observations on p = 100 fea- tures. Again the observations are uniformly distributed on each feature, and again each feature ranges in value from 0 to 1. We wish to predict a test observation’s response using observations within the 10 % of each feature’s range that is closest to that test observation. What fraction of the available observations will we use to make the prediction?
+
+- $(\frac{1} {10})^{100} $
+
+(d) Using your answers to parts (a)–(c), argue that a drawback of KNN when p is large is that there are very few training observations “near” any given test observation.
+
+- When p is very large, the points closest to the predicted point will gradually become farther and farther as p increases, and finally most points will be very close to the edge of the cube. Calulating the k nearest distance become less meaningful.
+
+(e) Now suppose that we wish to make a prediction for a test observation by creating a p-dimensional hypercube centered around the test observation that contains, on average, 10 % of the train- ing observations. For p = 1,2, and 100, what is the length of each side of the hypercube? Comment on your answer.
+
+- Suppose we have N points in total, when p = 1, the length of hypercube is 0.1, then p = 2, the length becomes $\sqrt 0.1$, when p = 100, the length becomes $\sqrt[100] 0.1$.
+
+This question should be answered using the Weekly data set, which is part of the ISLR2 package. This data is similar in nature to the Smarket data from this chapter’s lab, except that it contains 1, 089 weekly returns for 21 years, from the beginning of 1990 to the end of 2010.
+
+(a) Produce some numerical and graphical summaries of the Weekly data. Do there appear to be any patterns?
+
+```{r}
+summary(Weekly)
+```
+
+```{r Fig1, echo=FALSE, fig.height=2, fig.width=5}
+png("weekly_explore.png", width = 1100, height = 600)
+par(mfcol = c(2,4))
+coln = Weekly %>% colnames()
+col = ifelse(Weekly$Direction == 'Down', 'green', 'red')
+for (i in seq(2, 9)){
+    plot(x = Weekly$Year, y = Weekly[,i], col = col, xlab = 'Year', ylab = coln[i])
+}
+dev.off()
+# lags have similar tendencies, data of two directions overlap a lot
+```
+
+```{r}
+knitr::include_graphics("weekly_explore.png")
+```
+
+(b) Use the full data set to perform a logistic regression with Direction as the response and the five lag variables plus Volume as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant? If so, which ones?
+
+```{r}
+glm_fit <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
+```
+
+```{r}
+# I think no one appears to be statistically significant
+glm_fit
+```
+
+(c) Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
+
+```{r}
+glm_probs <- predict(glm_fit,type = "response")
+```
+
+```{r}
+glm_pred <- ifelse(glm_probs > 0.5, "Up", "Down")
+```
+
+```{r}
+# Sensitivity(TPR) = TP/(TP + FN) is low, means that the probability of Down being predicted correct is low
+# Specificity(TNR) = SPC = TN/N = TN/(FP + TN) is high, vice versa
+# pos pred value(PPV) = TP / (TP + FP) doesn't have big difference between neg pred value(NPV) = TN / (TN + FN), which means that the probability of the model misclassifying down and up is about the same
+# the model seems not good
+confusionMatrix(data = glm_pred %>% as.factor(), reference = Weekly$Direction %>% as.factor())
+```
+
+(d) Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
+
+```{r}
+pk_y = filter(Weekly, Year %in% seq(1990, 2008))
+pt_y = filter(Weekly, Year %in% seq(2009, 2010))
+glm_fit2 <- glm(Direction ~ Lag2, data = pk_y, family = binomial)
+glm_probs2 <- predict(glm_fit2,newdata = pt_y, type = "response")
+glm_pred2 <- ifelse(glm_probs2 > 0.5, "Up", "Down")
+```
+
+```{r}
+# Sensitivity, ppv and npv become better
+ry = Weekly %>% filter(Year %in% seq(2009, 2010))
+confusionMatrix(data = glm_pred2 %>% as.factor(), reference = ry$Direction %>% as.factor())
+```
+
+(e) Repeat (d) using LDA.
+
+```{r}
+model_p = function(mdl){
+  if (as.character(substitute(mdl)) == 'lda' | as.character(substitute(mdl)) == 'qda'){
+    fit = mdl(Direction ~ Lag2, data = pk_y)
+    probs <- predict(fit,newdata = pt_y)
+    pred = probs$class
+  }
+  else
+    if (as.character(substitute(mdl)) == 'knn'){
+      pred = knn(train = pk_y[,"Lag2", drop = F], test = ry[,"Lag2", drop = F], cl = pk_y$Direction, k=1)
+    }
+  else{
+    fit = naiveBayes(Direction ~ Lag2, data = pk_y)
+    pred = predict(fit,newdata = pt_y)
+  }
+  confusionMatrix(data = pred %>% as.factor(), reference = ry$Direction %>% as.factor())
+}
+```
+
+```{r}
+model_p(lda)
+```
+
+(f) Repeat (d) using QDA.
+
+```{r}
+model_p(qda)
+```
+
+(g) Repeat (d) using KNN with K = 1.
+
+```{r}
+model_p(knn)
+```
+
+(h) Repeat (d) using naive Bayes.
+
+```{r}
+model_p(naiveBayes)
+```
+
+(i) Which of these methods appears to provide the best results on this data?
+
+- LDA performs best
+
+(j) Experiment with different combinations of predictors, including possible transformations and interactions, for each of the methods. Report the variables, method, and associated confusion matrix that appears to provide the best results on the held out data. Note that you should also experiment with values for K in the KNN classifier.
+
+```{r}
+model_px = function(mdl, k, y_, ...){
+  f = as.formula(paste(y_,
+                     paste(..., collapse = '+'), 
+                     sep = '~'))
+  if (as.character(substitute(mdl)) == 'lda' | as.character(substitute(mdl)) == 'qda'){
+    fit = mdl(f, data = pk_y)
+    probs <- predict(fit,newdata = pt_y)
+    pred = probs$class
+  }
+  else
+    if (as.character(substitute(mdl)) == 'knn'){
+      pred = knn(train = pk_y[,"Lag2", drop = F], test = ry[,"Lag2", drop = F], cl = pk_y$Direction, k=k)
+    }
+  else{
+    fit = naiveBayes(f, data = pk_y)
+    pred = predict(fit,newdata = pt_y)
+  }
+  confusionMatrix(data = pred %>% as.factor(), reference = ry$Direction %>% as.factor())
+}
+```
+
+```{r}
+model_px(lda, k = 0, y_ = 'Direction', c('Lag1* Lag2', 'Lag3', 'Lag4 ^ 2'))
+```
+
+```{r}
+model_px(qda, k = 0, y_ = 'Direction', c('Lag1* Lag2', 'exp(Lag5)'))
+```
+
+```{r}
+model_px(knn, k = 4, y_ = 'Direction', c('Lag2* Lag6', 'Lag3'))
+```
+
+```{r}
+model_px(naiveBayes, k = 0, y_ = 'Direction', c('Lag2 ^2', 'Lag4'))
+```
+
