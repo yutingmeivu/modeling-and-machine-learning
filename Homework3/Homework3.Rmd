@@ -3,7 +3,8 @@ title: "Homework 3"
 author: "YutingMei"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
-  github_document
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r global options, include = FALSE}
@@ -81,13 +82,14 @@ L2_loss <- function(y, yhat)
 ```
 
 ```{r}
-## use glmnet to fit lasso
+## use glmnet to fit ridge
 ## glmnet fits using penalized L2 loss
 ## first create an input matrix and output vector
 form  <- lcavol ~  lweight + age + lbph + lcp + pgg45 + lpsa + svi + gleason
 x_inp <- model.matrix(form, data=prostate_train)
 y_out <- prostate_train$lcavol
-fit <- glmnet(x=x_inp, y=y_out, lambda=seq(0.5, 0, -0.005))
+lambdas = seq(1, 0, -0.05)
+fit <- glmnet(x=x_inp, y=y_out, alpha = 0, lambda=lambdas)
 # print(fit$beta)
 ```
 
@@ -112,7 +114,7 @@ data.frame(test_error = sumup, l_list)
 ```
 
 ```{r}
-ll = lam_f(seq(0, 1, 0.005))
+ll = lam_f(lambdas)
 ```
 
 ```{r}
@@ -150,53 +152,70 @@ colnames(fit$beta) <- paste('lam =', fit$lambda)
 * Create a path diagram of the ridge regression analysis, similar to HTF Figure 3.8
 
 ```{r}
-avg_coef = function(df){
-  beta_a = fit$beta[,which(fit$df == df)] %>% as.matrix()
-  if (df == 0)
-    rep(0,9)
-  else
-    (apply(beta_a, 1, sum) / (beta_a %>% ncol()))
+df_c = function(x, lambda){
+  x^2 / (x^2 + lambda)
 }
 ```
 
 ```{r}
-df_l = seq(0,8,2)
-sum = NULL
-for (i in seq_along(df_l)){
-  sum$df = avg_coef(df_l[i])
-  names(sum) = paste0('df_', df_l[i])
+df_all = NULL
+s = svd(x_inp, nu = nrow(x_inp), nv = ncol(x_inp))$d
+for (i in lambdas){
+  df_all$lam = sapply(s, function(s, lam)
+  df_c(x = s, lam = i))
+  names(df_all) = paste0('lam_', df_all[i])
 }
-final = data.frame(sum)
 ```
 
 ```{r}
-# rename the column name
-cnames = paste("df_", seq(0,8, 2), sep = '')
-colnames(final) = cnames
+df_all = df_all %>% data.frame()
+cnames = paste("lambda_", lambdas, sep = '')
+colnames(df_all) = cnames
 ```
 
 ```{r}
-# Because a df can correspond to multiple lambda values, so I just calculate the average coefficient of df(lambda)
-final
+# get degree of freedom of all variables with different lambdas
+df_all = data.frame(df_all, row.names = colnames(x_inp))
+df_all 
 ```
 
 ```{r}
-# texts seem overlap
-# and there are two extra points in the picture
-knitr::opts_chunk$set(fig.width=12, fig.height=8) 
-plot(
-  x = c(0,9),
-  y = c(-0.2,0.55),
-  xlab = expression(df(lambda)),
-  ylab = 'Coefficients'
-)
-for (j in 1:nrow(fit$beta)){
-  points(x = seq(0, 8, 2), y = final[j,], pch = 19, col = '#00000055')
-  lines(x = seq(0, 8, 2), y = final[j,], col = '#00000055')
+# sumup df of all variables
+df_l = colSums(df_all) %>% data.frame()
+df_l
+```
+
+```{r}
+# plot the path of df as x axis
+plot(x=range(as.matrix((df_l$.))),
+     y=range(as.matrix(fit$beta)),
+     type='n',
+     xlab=expression(df(lambda)),
+     ylab='Coefficients')
+for(i in 1:nrow(fit$beta)) {
+  points(x=df_l$., y=fit$beta[i,], pch=19, col='#00000055')
+  lines(x=df_l$., y=fit$beta[i,], col='#00000055')
 }
 text(x=9, y=fit$beta[,ncol(fit$beta)], 
      labels=rownames(fit$beta),
      xpd=NA, pos=4, srt=45)
-abline(h = 0, lty = 3, lwd = 2)
+abline(h=0, lty=3, lwd=2)
 ```
+
+```{r}
+plot(x=range(fit$lambda),
+     y=range(as.matrix(fit$beta)),
+     type='n',
+     xlab=expression(lambda),
+     ylab='Coefficients')
+for(i in 1:nrow(fit$beta)) {
+  points(x=fit$lambda, y=fit$beta[i,], pch=19, col='#00000055')
+  lines(x=fit$lambda, y=fit$beta[i,], col='#00000055')
+}
+text(x=0, y=fit$beta[,ncol(fit$beta)], 
+     labels=rownames(fit$beta),
+     xpd=NA, pos=4, srt=45)
+abline(h=0, lty=3, lwd=2)
+```
+
 
