@@ -37,7 +37,7 @@ known as the curse of dimensionality, and it ties into the fact that non-paramet
 
 (d) Using your answers to parts (a)–(c), argue that a drawback of KNN when p is large is that there are very few training observations “near” any given test observation.
 
-- When p is very large, the points closest to the predicted point will gradually become farther and farther as p increases, and finally most points will be very close to the edge of the cube. If we want to predict a test obeservation's response using observations within 10% of each feature's range that is closest to that observation, the fraction of the available observations will we use to make the prediction is $\lim_{p \to \infty}(\frac{1} {10})^{p} $, which becomes zero. Calulating the k nearest distance become less meaningful.
+- When p is very large, the points closest to the predicted point will gradually become farther and farther as p increases, and finally most points will be very close to the edge of the cube. If we want to predict a test obeservation's response using observations within 10% of each feature's range that is closest to that observation, the fraction of the available observations will we use to make the prediction is $\lim_{p \to \infty}(\frac{1} {10})^{p} = 0$. Calulating the k nearest distance become less meaningful.
 
 (e) Now suppose that we wish to make a prediction for a test observation by creating a p-dimensional hypercube centered around the test observation that contains, on average, 10 % of the train- ing observations. For p = 1,2, and 100, what is the length of each side of the hypercube? Comment on your answer.
 
