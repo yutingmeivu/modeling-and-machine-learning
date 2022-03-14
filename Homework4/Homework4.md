@@ -1,7 +1,7 @@
 Homework 4
 ================
 YutingMei
-February 20, 2022
+March 14, 2022
 
 When the number of features p is large, there tends to be a
 deterioration in the performance of KNN and other local approaches that
@@ -23,7 +23,8 @@ now investigate this curse.
     prediction?
 
 -   Because X is uniformly (evenly) distributed on \[0, 1\], so it
-    becomes a line. The fraction we use to make prediction is 0.1.
+    becomes a line. The fraction we use to make prediction is 0.1, which
+    is 10%.
 
 2.  Now suppose that we have a set of observations, each with
     measurements on p = 2 features, X1 and X2. We assume that (X1, X2)
@@ -37,7 +38,7 @@ now investigate this curse.
     observations will we use to make the prediction?
 
 -   Since p equals to 2, then the space become a square, the fraction we
-    need to predict about two ponts becomes 0.02.
+    need to predict about two ponts becomes 10% \* 10%, which is 1%.
 
 3.  Now suppose that we have a set of observations on p = 100 fea-
     tures. Again the observations are uniformly distributed on each
@@ -55,8 +56,12 @@ now investigate this curse.
 
 -   When p is very large, the points closest to the predicted point will
     gradually become farther and farther as p increases, and finally
-    most points will be very close to the edge of the cube. Calulating
-    the k nearest distance become less meaningful.
+    most points will be very close to the edge of the cube. If we want
+    to predict a test obeservation’s response using observations within
+    10% of each feature’s range that is closest to that observation, the
+    fraction of the available observations will we use to make the
+    prediction is $\\lim\_{p \\to \\infty}(\\frac{1} {10})^{p} = 0$.
+    Calulating the k nearest distance become less meaningful.
 
 5.  Now suppose that we wish to make a prediction for a test observation
     by creating a p-dimensional hypercube centered around the test
