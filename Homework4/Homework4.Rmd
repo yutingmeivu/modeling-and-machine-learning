@@ -25,19 +25,19 @@ known as the curse of dimensionality, and it ties into the fact that non-paramet
 
 (a) Suppose that we have a set of observations, each with measurements on p = 1 feature, X. We assume that X is uniformly (evenly) distributed on [0, 1]. Associated with each observation is a response value. Suppose that we wish to predict a test observation’s response using only observations that are within 10 % of the range of X closest to that test observation. For instance, in order to predict the response for a test observation with X = 0.6, we will use observations in the range [0.55,0.65]. On average, what fraction of the available observations will we use to make the prediction?
 
-- Because X is uniformly (evenly) distributed on [0, 1], so it becomes a line. The fraction we use to make prediction is 0.1, which is 10%.
+- Because X is uniformly (evenly) distributed on [0, 1], so it becomes a line. If we don't consider the points between [0, 0.05) and (0.95, 1], then the fraction we use to make prediction is 10%. If we consider the above two cases when there is not enough 10% of the range of points closest to that observation, the average fraction will be 9.75%. 
 
 (b) Now suppose that we have a set of observations, each with measurements on p = 2 features, X1 and X2. We assume that (X1, X2) are uniformly distributed on [0, 1] × [0, 1]. We wish to predict a test observation’s response using only observations that are within 10 % of the range of X1 and within 10 % of the range of X2 closest to that test observation. For instance, in order to predict the response for a test observation with X1 = 0.6 and X2 = 0.35, we will use observations in the range [0.55, 0.65] for X1 and in the range [0.3,0.4] for X2. On average, what fraction of the available observations will we use to make the prediction?
 
-- Since p equals to 2, then the space become a square, the fraction we need to predict about two ponts becomes 10% * 10%, which is 1%. 
+- Since p equals to 2, then the space become a square, the fraction we need to predict about two ponts becomes 9.75% * 9.75%, which is about 0.95%. 
 
 (c) Now suppose that we have a set of observations on p = 100 fea- tures. Again the observations are uniformly distributed on each feature, and again each feature ranges in value from 0 to 1. We wish to predict a test observation’s response using observations within the 10 % of each feature’s range that is closest to that test observation. What fraction of the available observations will we use to make the prediction?
 
-- $(\frac{1} {10})^{100} $
+- $(9.75 \%)^{100} $
 
 (d) Using your answers to parts (a)–(c), argue that a drawback of KNN when p is large is that there are very few training observations “near” any given test observation.
 
-- When p is very large, the points closest to the predicted point will gradually become farther and farther as p increases, and finally most points will be very close to the edge of the cube. If we want to predict a test obeservation's response using observations within 10% of each feature's range that is closest to that observation, the fraction of the available observations will we use to make the prediction is $\lim_{p \to \infty}(\frac{1} {10})^{p} = 0$. Calulating the k nearest distance become less meaningful.
+- When p is very large, the points closest to the predicted point will gradually become farther and farther as p increases, and finally most points will be very close to the edge of the cube. If we want to predict a test obeservation's response using observations within 10% of each feature's range that is closest to that observation, the fraction of the available observations will we use to make the prediction is $\lim_{p \to \infty}(9.75 \%)^{p} = 0$. Calulating the k nearest distance become less meaningful.
 
 (e) Now suppose that we wish to make a prediction for a test observation by creating a p-dimensional hypercube centered around the test observation that contains, on average, 10 % of the train- ing observations. For p = 1,2, and 100, what is the length of each side of the hypercube? Comment on your answer.
 

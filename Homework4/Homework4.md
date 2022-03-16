@@ -1,7 +1,7 @@
 Homework 4
 ================
 YutingMei
-March 14, 2022
+March 15, 2022
 
 When the number of features p is large, there tends to be a
 deterioration in the performance of KNN and other local approaches that
@@ -23,8 +23,11 @@ now investigate this curse.
     prediction?
 
 -   Because X is uniformly (evenly) distributed on \[0, 1\], so it
-    becomes a line. The fraction we use to make prediction is 0.1, which
-    is 10%.
+    becomes a line. If we don’t consider the points between \[0, 0.05)
+    and (0.95, 1\], then the fraction we use to make prediction is 10%.
+    If we consider the above two cases when there is not enough 10% of
+    the range of points closest to that observation, the average
+    fraction will be 9.75%.
 
 2.  Now suppose that we have a set of observations, each with
     measurements on p = 2 features, X1 and X2. We assume that (X1, X2)
@@ -38,7 +41,8 @@ now investigate this curse.
     observations will we use to make the prediction?
 
 -   Since p equals to 2, then the space become a square, the fraction we
-    need to predict about two ponts becomes 10% \* 10%, which is 1%.
+    need to predict about two ponts becomes 9.75% \* 9.75%, which is
+    about 0.95%.
 
 3.  Now suppose that we have a set of observations on p = 100 fea-
     tures. Again the observations are uniformly distributed on each
@@ -48,7 +52,7 @@ now investigate this curse.
     observation. What fraction of the available observations will we use
     to make the prediction?
 
--   $( {10})^{100} $
+-   $(9.75 %)^{100} $
 
 4.  Using your answers to parts (a)–(c), argue that a drawback of KNN
     when p is large is that there are very few training observations
@@ -60,7 +64,7 @@ now investigate this curse.
     to predict a test obeservation’s response using observations within
     10% of each feature’s range that is closest to that observation, the
     fraction of the available observations will we use to make the
-    prediction is $\\lim\_{p \\to \\infty}(\\frac{1} {10})^{p} = 0$.
+    prediction is lim<sub>*p* → ∞</sub>(9.75%)<sup>*p*</sup> = 0.
     Calulating the k nearest distance become less meaningful.
 
 5.  Now suppose that we wish to make a prediction for a test observation
