@@ -122,6 +122,7 @@ which.min(sapply(df_all, mean))
 
 ```{r}
 # FALSE is the rate of model make classification correctly
+# the misclassification rate is 0.1688312
 ft_tuned = randomForest(y ~ ., data=vowel_train, 
                     proximity=TRUE, nodesize = 1, mtry = 3)
 pre_tuned <- predict(ft_tuned, vowel_test)

@@ -1,7 +1,7 @@
 Homework 6
 ================
 YutingMei
-March 26, 2022
+April 21, 2022
 
 ``` r
 library('randomForest')  ## fit random forest
@@ -94,7 +94,7 @@ print(fit)
     ##                      Number of trees: 500
     ## No. of variables tried at each split: 3
     ## 
-    ##         OOB estimate of  error rate: 2.65%
+    ##         OOB estimate of  error rate: 2.84%
     ## Confusion matrix:
     ##     1  2  3  4  5  6  7  8  9 10 11 class.error
     ## 1  48  0  0  0  0  0  0  0  0  0  0  0.00000000
@@ -102,12 +102,12 @@ print(fit)
     ## 3   0  0 48  0  0  0  0  0  0  0  0  0.00000000
     ## 4   0  0  0 47  0  1  0  0  0  0  0  0.02083333
     ## 5   0  0  0  0 46  1  0  0  0  0  1  0.04166667
-    ## 6   0  0  0  0  0 43  0  0  0  0  5  0.10416667
-    ## 7   0  0  0  0  1  0 45  2  0  0  0  0.06250000
+    ## 6   0  0  0  0  0 44  0  0  0  0  4  0.08333333
+    ## 7   0  0  0  0  1  0 46  1  0  0  0  0.04166667
     ## 8   0  0  0  0  0  0  0 48  0  0  0  0.00000000
-    ## 9   0  0  0  0  0  0  1  0 47  0  0  0.02083333
-    ## 10  0  0  0  0  0  0  0  0  1 47  0  0.02083333
-    ## 11  0  0  0  0  0  0  0  0  0  0 48  0.00000000
+    ## 9   0  0  0  0  0  0  1  1 45  1  0  0.06250000
+    ## 10  0  0  0  0  0  0  1  0  0 47  0  0.02083333
+    ## 11  0  0  0  0  0  1  0  0  0  0 47  0.02083333
 
 -   Use 5-fold CV and tune the model by performing a grid search for the
     following tuning parameters: 1) the number of variables randomly
@@ -281,6 +281,7 @@ which.min(sapply(df_all, mean))
 
 ``` r
 # FALSE is the rate of model make classification correctly
+# the misclassification rate is 0.1688312
 ft_tuned = randomForest(y ~ ., data=vowel_train, 
                     proximity=TRUE, nodesize = 1, mtry = 3)
 pre_tuned <- predict(ft_tuned, vowel_test)
